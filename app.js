@@ -3,14 +3,26 @@ const path = require('path');
 const mongoose = require('mongoose');
 const session = require('express-session');
 const authRoutes = require('./backend/routes/auth');
+const exphbs = require('express-handlebars');
+const User = require('./backend/models/user');
 require('dotenv').config();
 
 const app = express();
-process.env.PORT = 3000;
+const PORT = process.env.PORT || 3000;
+
+app.engine('hbs', exphbs.engine({
+    extname: '.hbs',
+    defaultLayout: 'main',
+    layoutsDir: path.join(__dirname, 'backend', 'views', 'layouts')
+}));
+
+app.set('view engine', 'hbs');
+app.set('views', path.join(__dirname, 'backend', 'views'));
 
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static(path.join(__dirname, 'frontend')));
+app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());
+
 app.use(session({
     secret: process.env.SESSION_SECRET,
     resave: false,
@@ -24,22 +36,27 @@ mongoose.connect(process.env.MONGO_URI)
 app.use('/auth', authRoutes);
 
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'frontend', 'index.html'));
+    res.render('home');
 });
 
-app.get('/dashboard', (req, res) => {
+app.get('/dashboard', async (req, res) => {
     if (!req.session.userId) {
-        return res.redirect('/login.html');
+        return res.redirect('/auth/login');
     }
-    res.send(`<h2>Welcometo your dashboard</h2><a href="/logout">Logout</a>`)
-})
+    try {
+        const user = await User.findById(req.session.userId);
+        if (!user) {
+            return res.redirect('/auth/login');
+        }
+        res.render('dashboard', { username: user.username }); //this can be easily expanded to show other things like email.
+    }
+    catch (err) {
+        console.error('Dashboard error: ', err);
+        res.status(500).send('Something went wrong');
+    }
 
-app.get('/logout', (req, res) => {
-    req.session.destroy(() => {
-        res.redirect('/');
-    })
-})
+});
 
-app.listen(process.env.PORT, () => {
-    console.log(`Server running on http://localhost:${process.env.PORT}`);
+app.listen(PORT, () => {
+    console.log(`Server running on http://localhost:${PORT}`);
 })
