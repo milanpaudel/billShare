@@ -1,0 +1,10 @@
+<h2>{{group.name}}</h2>
+
+<p><strong>Memebrs: </strong>{{group.members}}</p>
+
+<form action="group/{{group._id}}/expenses" method="POST">
+    <input type="text" name="description" placeholder="Expense description" required>
+    <input type="number" name="amount" placeholder="Amount" step="0.01" required>
+    <input type="text" name="paidBy" placeholder="Paid By (name)" required>
+    <button type="submit">Add expense</button>
+</form>

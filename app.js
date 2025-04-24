@@ -3,8 +3,10 @@ const path = require('path');
 const mongoose = require('mongoose');
 const session = require('express-session');
 const authRoutes = require('./backend/routes/auth');
+const groupRoutes = require('./backend/routes/group');
 const exphbs = require('express-handlebars');
 const User = require('./backend/models/user');
+const Group = require('./backend/models/group');
 require('dotenv').config();
 
 const app = express();
@@ -34,6 +36,7 @@ mongoose.connect(process.env.MONGO_URI)
     .catch(err => console.err('MongoDB error: ', err));
 
 app.use('/auth', authRoutes);
+app.use('/group', groupRoutes);
 
 app.get('/', (req, res) => {
     res.render('home');
@@ -44,15 +47,15 @@ app.get('/dashboard', async (req, res) => {
         return res.redirect('/auth/login');
     }
     try {
-        const user = await User.findById(req.session.userId);
-        if (!user) {
-            return res.redirect('/auth/login');
-        }
-        res.render('dashboard', { username: user.username }); //this can be easily expanded to show other things like email.
+        const group = await Group.find({ createdBy: req.session.userId }).lean();
+        res.render('dashboard', {
+            username: req.session.username || 'User',
+            group
+        });
     }
     catch (err) {
-        console.error('Dashboard error: ', err);
-        res.status(500).send('Something went wrong');
+        console.error('Error loading dashboard: ', err);
+        res.status(500).send('Server error');
     }
 
 });

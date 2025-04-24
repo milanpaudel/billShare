@@ -14,7 +14,7 @@
             <h1>Welcome, {{username}}</h1>
             <nav>
                 <a href="/dashboard"><i class="fas fa-home"></i> Dashboard</a>
-                <a href="/groups/create"><i class="fas fa-users"></i> Create Group</a>
+                <a href="/group/create"><i class="fas fa-users"></i> Create Group</a>
                 <a href="/auth/logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
             </nav>
         </header>
@@ -23,14 +23,16 @@
             <section>
                 <h2>Your Groups</h2>
                 <!-- You can loop over groups here if passed from backend -->
-                {{#if groups.length}}
+                {{#if group.length}}
                 <ul>
-                    {{#each groups}}
-                    <li><strong>{{name}}</strong> – {{members.length}} members</li>
+                    {{#each group}}
+                    <ul>
+                        <a href="'/group/{{_id}}">{{name}}</a>
+                    </ul>
                     {{/each}}
                 </ul>
                 {{else}}
-                <p>No groups yet. <a href="/groups/create">Create one</a></p>
+                <p>No groups yet. <a href="/group/create">Create New Group</a></p>
                 {{/if}}
             </section>
         </main>
