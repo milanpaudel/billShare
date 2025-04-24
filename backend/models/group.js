@@ -5,8 +5,12 @@ const groupSchema = new Schema({
     name: { type: String, required: true },
     members: [String],
     createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-    date: { type: Date, default: Date.now }
-
+    expenses: [{
+        description: String,
+        amount: Number,
+        paidBy: String,
+        date: { type: Date, default: Date.now }
+    }]
 });
 
 module.exports = mongoose.model('Group', groupSchema);
