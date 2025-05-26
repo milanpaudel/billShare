@@ -18,7 +18,9 @@ app.engine('hbs', exphbs.engine({
     layoutsDir: path.join(__dirname, 'backend', 'views', 'layouts'),
     helpers: {
         lt: (a, b) => a < b,
-        multiply: (a, b) => a * b
+        multiply: (a, b) => a * b,
+        ifEquals: (a, b, options) =>
+            (a === b ? options.fn(this) : options.inverse(this))
     }
 }));
 

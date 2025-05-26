@@ -1,0 +1,13 @@
+<h2>Edit Group</h2>
+
+<form action="/group/{{group._id}}/edit" method="POST">
+    <label>Group Name:</label>
+    <input type="text" name="name" value="{{group.name}}" required>
+
+    <label>Members (comma-separated):</label>
+    <input type="text" name="members" value="{{group.members}}" required>
+
+    <button type="submit">💾 Save Changes</button>
+</form>
+
+<a href="/group/{{group._id}}">⬅️ Back to Group</a>
